@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - CheWallet</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .login-container {
+            width: 300px; margin: 100px auto; padding: 30px; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; margin-bottom: 20px; }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px;
+        }
+        button {
+            width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer;
+        }
+        button:hover { background: #0056b3; }
+        .error { color: red; text-align: center; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>Iniciar Sesión</h2>
+    <form id="loginForm">
+        <div class="error" id="errorMsg"></div>
+        <input type="text" id="username" placeholder="Usuario" required>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button type="submit">Iniciar sesión</button>
+    </form>
+</div>
+<script>
+    document.getElementById('loginForm').onsubmit = async function(e) {
+        e.preventDefault();
+        document.getElementById('errorMsg').textContent = '';
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                // Suponiendo que el backend responde con { token: "..." }
+                document.cookie = `jwt=${data.token}; path=/`;
+                window.location.href = 'checkout-test.html';
+            } else {
+                document.getElementById('errorMsg').textContent = 'Usuario o contraseña incorrectos';
+            }
+        } catch (err) {
+            document.getElementById('errorMsg').textContent = 'Error de conexión';
+        }
+    }
+</script>
+</body>
+</html>
