@@ -9,7 +9,7 @@ public record LoginDto(
         @NotBlank
         @Size(min = 6, max = 20, message = "Usuario debe tener entre 6 y 20 caracteres")
         String username,
-        @Size(min = 6, max = 20, message = "Usuario debe tener entre 6 y 20 caracteres")
+        @Size(min = 6, max = 20, message = "Contraseña debe tener entre 8 y 20 caracteres")
         String password
 ) {
 }

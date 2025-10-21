@@ -1,12 +1,10 @@
 package org.emmanuel.chewallet.dtos.transactionDto;
 
-import java.time.LocalDateTime;
-
-public record TransactionConfirmDto(
+public record TransactionDtoResponse(
         String operationNumber,
         String destinationCvu,
         String destinationAlias,
-        float amount,
-        LocalDateTime date
+        Float amount,
+        String date
 ) {
 }

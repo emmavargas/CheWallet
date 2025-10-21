@@ -6,8 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record RegisterDto(
-        @NotBlank
-        @NotNull
+        @NotBlank(message = "Usuario no puede estar vacío")
         @Size(min = 6, max = 20, message = "Usuario debe tener entre 6 y 20 caracteres")
         String username,
         @NotBlank

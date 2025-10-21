@@ -1,14 +1,10 @@
 package org.emmanuel.chewallet.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Random;
 
-@NoArgsConstructor
-@Data
 @Entity
 public class Account {
 
@@ -25,10 +21,7 @@ public class Account {
     private Double balance = 0.0;
 
     @OneToMany(mappedBy = "account")
-    private List<Transfer> transfers;
-
-    @OneToMany(mappedBy = "account")
-    private List<Deposit> deposits;
+    private List<Transaction> transactions;
 
     @PrePersist
     public void generarCvuAlias() {
@@ -57,5 +50,46 @@ public class Account {
         }
     }
 
+    public Account() {
+    }
 
+    public String getCvu() {
+        return cvu;
+    }
+
+    public void setCvu(String cvu) {
+        this.cvu = cvu;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public Double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Double balance) {
+        this.balance = balance;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

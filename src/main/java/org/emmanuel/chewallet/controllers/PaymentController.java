@@ -5,18 +5,25 @@ import org.emmanuel.chewallet.dtos.payments.PaymentRequestDto;
 import org.emmanuel.chewallet.dtos.payments.PaymentStatusRequestDto;
 import org.emmanuel.chewallet.dtos.payments.PaymentStatusDto;
 import org.emmanuel.chewallet.dtos.payments.webHookDto.MercadoPagoWebhookDto;
+import org.emmanuel.chewallet.dtos.transactionDto.TransactionDtoRequest;
+import org.emmanuel.chewallet.dtos.transactionDto.TransactionDtoResponse;
 import org.emmanuel.chewallet.services.PaymentService;
+import org.emmanuel.chewallet.services.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/payments")
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final TransactionService transactionService;
 
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, TransactionService transactionService) {
         this.paymentService = paymentService;
+        this.transactionService = transactionService;
     }
 
     @PostMapping("/checkout")
@@ -59,5 +66,27 @@ public class PaymentController {
             System.out.println("No se encontró paymentId en el payload");
         }
         return ResponseEntity.ok().build();
+    }
+
+
+    @PostMapping("/transfer")
+    public ResponseEntity<?> createTransfer(@RequestBody TransactionDtoRequest transactionDtoRequest) {
+        TransactionDtoResponse transactionDtoResponse = transactionService.saveTransaction(transactionDtoRequest);
+        return ResponseEntity.ok(transactionDtoResponse);
+    }
+
+
+    @GetMapping("/historyPayments")
+    public ResponseEntity<?> getHistoryPayments() {
+        return ResponseEntity.ok(transactionService.getHistoryTransactions());
+    }
+
+
+    @PostMapping("/amount")
+    public ResponseEntity<?> addAmount(@RequestBody TransactionDtoRequest transactionDtoRequest) {
+        System.out.println("entro al controller");
+        transactionService.addAmountToAccount();
+        Map<String,String> response = Map.of("message", "Monto agregado exitosamente");
+        return ResponseEntity.ok(response);
     }
 }
