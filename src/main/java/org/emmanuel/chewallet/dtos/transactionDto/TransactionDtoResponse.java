@@ -2,8 +2,8 @@ package org.emmanuel.chewallet.dtos.transactionDto;
 
 public record TransactionDtoResponse(
         String operationNumber,
+        String originCvu,
         String destinationCvu,
-        String destinationAlias,
         Float amount,
         String date
 ) {

@@ -1,11 +1,12 @@
 package org.emmanuel.chewallet.controllers;
 
+import org.emmanuel.chewallet.dtos.UserDataDto.UpdateAliasRequestDto;
 import org.emmanuel.chewallet.services.UserService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -14,7 +15,23 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/details")
+    public ResponseEntity<?> getUserDetails() {
+        var currentUser = userService.getUserInfo();
+        return ResponseEntity.ok(currentUser);
+    }
 
+    @PutMapping("/update")
+    public ResponseEntity<?> updateAlias(@RequestBody UpdateAliasRequestDto updateAliasRequestDto) {
+        var updatedUser = userService.updateAlias(updateAliasRequestDto);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getUserResume() {
+        var currentUser = userService.resumeUser();
+        return ResponseEntity.ok(currentUser);
+    }
 
 
 }

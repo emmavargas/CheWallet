@@ -7,7 +7,7 @@ import org.emmanuel.chewallet.dtos.transactionDto.TransactionDtoRequest;
 import org.emmanuel.chewallet.dtos.transactionDto.TransactionDtoResponse;
 import org.emmanuel.chewallet.entities.*;
 import org.emmanuel.chewallet.exceptions.payments.AliasNotFoundException;
-import org.emmanuel.chewallet.exceptions.payments.InsufficientBalanceExeption;
+import org.emmanuel.chewallet.exceptions.payments.InsufficientBalanceException;
 import org.emmanuel.chewallet.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,8 +44,7 @@ public class TransactionService {
             throw new AliasNotFoundException("El alias de destino no existe");
         }
         if(!checkIfAmountIsPositive(transactionDtoRequest.amount(), account)){
-
-            throw new InsufficientBalanceExeption("Fondos insuficientes para realizar la transaccion");
+            throw new InsufficientBalanceException("Fondos insuficientes para realizar la transaccion");
         }
 
         Account accountDestination = accountRepository.findByAlias(transactionDtoRequest.alias()).orElseThrow();
@@ -72,17 +71,21 @@ public class TransactionService {
         transactionReceived.setDescription(transactionDtoRequest.description());
         transactionReceived.setType(TransactionType.TRANSFER_RECEIVED);
         transactionReceived.setStatus("COMPLETED");
+
+
+        transactionRepository.save(transactionSent);
+        transactionRepository.save(transactionReceived);
         
         account.getTransactions().add(transactionSent);
-        account.setBalance(account.getBalance() + transactionDtoRequest.amount());
+        account.setBalance(account.getBalance() - transactionDtoRequest.amount());
 
         accountDestination.setBalance(accountDestination.getBalance() + transactionDtoRequest.amount());
         accountDestination.getTransactions().add(transactionReceived);
 
         return new TransactionDtoResponse(
                 transactionSent.getTransactionId(),
+                account.getCvu(),
                 accountDestination.getCvu(),
-                accountDestination.getAlias(),
                 transactionSent.getAmount(),
                 transactionSent.getDate().toString()
         );
@@ -92,7 +95,7 @@ public class TransactionService {
 
 
     @Transactional(readOnly = true)
-    public PageDto<TransactionDto> getHistoryTransactions() {
+    public PageDto<TransactionDto> getHistoryTransactions(Integer page, Integer size) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow();
         Account account = user.getAccount();
@@ -100,7 +103,7 @@ public class TransactionService {
 
         Sort sort = Sort.by(Sort.Direction.DESC, "date");
 
-        Pageable pageable = PageRequest.of(0,3,sort);
+        Pageable pageable = PageRequest.of(page,size,sort);
 
         Page<TransactionHistoryProjection> pageTransactions = transactionRepository.findHistoryByAccountId(account.getId(), pageable);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -110,6 +113,8 @@ public class TransactionService {
                 transaction -> new TransactionDto(
                         transaction.getDestinationName(),
                         transaction.getDestinationLastname(),
+                        transaction.getOriginName(),
+                        transaction.getOriginLastname(),
                         transaction.getTransactionDate().format(formatter),
                         transaction.getTransactionType(),
                         transaction.getAmount()
@@ -138,18 +143,13 @@ public class TransactionService {
 
     @Transactional
     public void addAmountToAccount(){
-        System.out.println("Etrno al addAccount");
         try {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            System.out.println("Usuario: " + username);
             User user = userRepository.findByUsername(username).orElseThrow();
             Account account = user.getAccount();
-            System.out.println("Saldo antes: " + account.getBalance());
-            account.setBalance(account.getBalance() + 5000.0);
+            account.setBalance(account.getBalance() + 5000.0F);
             accountRepository.save(account);
-            System.out.println("Saldo después: " + account.getBalance());
         } catch (Exception e) {
-            System.out.println("Error al agregar monto: " + e.getMessage());
         }
 
     }

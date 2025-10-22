@@ -11,10 +11,7 @@ import org.emmanuel.chewallet.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -33,12 +30,9 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto, HttpServletResponse response) {
          try {
             String token = authService.generateToken(loginDto);
-            Cookie cookie = new Cookie("jwt", token);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false);
-            cookie.setPath("/");
-            cookie.setMaxAge(60 * 60);
-            response.addCookie(cookie);
+            String cookie = authService.createCookieWithToken(token);
+//            response.addCookie(cookie);
+             response.addHeader("Set-Cookie", cookie);
 
             Map<String, String> responseBody = Map.of("message", "login successful", "username", loginDto.username());
             return ResponseEntity.ok().body(responseBody);
@@ -59,4 +53,27 @@ public class AuthController {
         Map<String, Object> response = Map.of("message", user);
         return ResponseEntity.ok().body(response);
     }
+
+    @GetMapping("/check")
+    public ResponseEntity<?> checkLogin(@CookieValue(name = "jwt", required = false) String token,  HttpServletResponse response) {
+        if (token == null || token.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "No autenticado"));
+        }
+
+        try {
+            if (!authService.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Token inválido"));
+            }
+            String username = authService.getClaimsFromToken(token);
+            String tokenRenovate = authService.refreshToken(token);
+            String cookie = authService.createCookieWithToken(tokenRenovate);
+            response.addHeader("Set-Cookie", cookie);
+
+            return ResponseEntity.ok(Map.of("message", "Autenticado", "username", username));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Token inválido"));
+        }
+    }
+
 }

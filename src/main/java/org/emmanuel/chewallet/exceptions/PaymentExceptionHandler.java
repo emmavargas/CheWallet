@@ -1,7 +1,9 @@
-package org.emmanuel.chewallet.exceptions.payments;
+package org.emmanuel.chewallet.exceptions;
 
 import org.emmanuel.chewallet.dtos.ApiErrorDto;
-import org.hibernate.sql.Alias;
+import org.emmanuel.chewallet.exceptions.payments.AliasNotFoundException;
+import org.emmanuel.chewallet.exceptions.payments.InsufficientBalanceException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,13 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-@RestControllerAdvice(basePackages = "org.emmanuel.chewallet.controllers.payment")
+@RestControllerAdvice
 public class PaymentExceptionHandler {
 
 
 
-    @ExceptionHandler(InsufficientBalanceExeption.class)
-    public ResponseEntity<?> handlePaymentException(InsufficientBalanceExeption ex) {
+    @ExceptionHandler(InsufficientBalanceException.class)
+    public ResponseEntity<?> handlePaymentException(InsufficientBalanceException ex) {
         ApiErrorDto apiErrorDto = new ApiErrorDto(
                 LocalDateTime.now(),
                 402,

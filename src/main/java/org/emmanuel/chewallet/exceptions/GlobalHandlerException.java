@@ -1,18 +1,21 @@
 package org.emmanuel.chewallet.exceptions;
 
 import org.emmanuel.chewallet.dtos.ApiErrorDto;
+import org.emmanuel.chewallet.exceptions.payments.InsufficientBalanceException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalHandlerException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -68,15 +71,15 @@ public class GlobalHandlerException {
         return ResponseEntity.badRequest().body(apiErrorDto);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleAllExceptions(Exception ex) {
-        ApiErrorDto apiErrorDto = new ApiErrorDto(
-                LocalDateTime.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                Map.of("message", "Ha ocurrido un error inesperado")
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiErrorDto);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<?> handleAllExceptions(Exception ex) {
+//        ApiErrorDto apiErrorDto = new ApiErrorDto(
+//                LocalDateTime.now(),
+//                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+//                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+//                Map.of("message", "Ha ocurrido un error inesperado")
+//        );
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiErrorDto);
+//    }
 
 }

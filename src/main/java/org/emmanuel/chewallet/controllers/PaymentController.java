@@ -76,15 +76,15 @@ public class PaymentController {
     }
 
 
-    @GetMapping("/historyPayments")
-    public ResponseEntity<?> getHistoryPayments() {
-        return ResponseEntity.ok(transactionService.getHistoryTransactions());
+
+    @GetMapping("/transactions")
+    public ResponseEntity<?> getTransaction(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(transactionService.getHistoryTransactions(page, size));
     }
 
 
     @PostMapping("/amount")
     public ResponseEntity<?> addAmount(@RequestBody TransactionDtoRequest transactionDtoRequest) {
-        System.out.println("entro al controller");
         transactionService.addAmountToAccount();
         Map<String,String> response = Map.of("message", "Monto agregado exitosamente");
         return ResponseEntity.ok(response);

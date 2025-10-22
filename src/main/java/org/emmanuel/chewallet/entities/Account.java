@@ -18,7 +18,7 @@ public class Account {
     @Column(unique = true)
     private String alias;
 
-    private Double balance = 0.0;
+    private Float balance = 0.0F;
 
     @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
@@ -69,11 +69,11 @@ public class Account {
         this.alias = alias;
     }
 
-    public Double getBalance() {
+    public Float getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(Float balance) {
         this.balance = balance;
     }
 
