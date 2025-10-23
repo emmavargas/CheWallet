@@ -3,6 +3,7 @@ package org.emmanuel.chewallet.exceptions;
 import org.emmanuel.chewallet.dtos.ApiErrorDto;
 import org.emmanuel.chewallet.exceptions.payments.AliasNotFoundException;
 import org.emmanuel.chewallet.exceptions.payments.InsufficientBalanceException;
+import org.emmanuel.chewallet.exceptions.payments.SameAccountTransferException;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -36,5 +37,16 @@ public class PaymentExceptionHandler {
                 Map.of("error", ex.getMessage())
         );
         return ResponseEntity.status(404).body(apiErrorDto);
+    }
+
+    @ExceptionHandler(SameAccountTransferException.class)
+    public ResponseEntity<?> handleSameAccountTransferException(SameAccountTransferException ex) {
+        ApiErrorDto apiErrorDto = new ApiErrorDto(
+                LocalDateTime.now(),
+                400,
+                "Same Account Transfer",
+                Map.of("error", ex.getMessage())
+        );
+        return ResponseEntity.status(400).body(apiErrorDto);
     }
 }

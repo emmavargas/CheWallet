@@ -46,6 +46,9 @@ public class TransactionService {
         if(!checkIfAmountIsPositive(transactionDtoRequest.amount(), account)){
             throw new InsufficientBalanceException("Fondos insuficientes para realizar la transaccion");
         }
+        if(account.getAlias().equals(transactionDtoRequest.alias())){
+            throw new SameAccountTransferException("No se puede transferir a la misma cuenta");
+        }
 
         Account accountDestination = accountRepository.findByAlias(transactionDtoRequest.alias()).orElseThrow();
 
