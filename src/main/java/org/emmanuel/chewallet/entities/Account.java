@@ -15,7 +15,7 @@ public class Account {
     @Column(unique = true, length = 22)
     private String cvu;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 15)
     private String alias;
 
     private Float balance = 0.0F;
@@ -23,21 +23,12 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;
 
+    @PostPersist
+    public void asignarCvuUnico() {
+        this.cvu = String.format("%022d", this.id);
+    }
     @PrePersist
     public void generarCvuAlias() {
-        if (this.cvu == null) {
-            String prefijo = "001";
-            long timestamp = System.currentTimeMillis();
-            String timestampStr = String.valueOf(timestamp).substring(0, 12);
-            Random random = new Random();
-            int randomNum = random.nextInt(9000) + 1000;
-            StringBuilder sb = new StringBuilder();
-            sb.append(prefijo).append(timestampStr).append(randomNum);
-            while (sb.length() < 22) {
-                sb.append("0");
-            }
-            this.cvu = sb.toString();
-        }
         if (this.alias == null) {
             String prefijo = "user";
             long timestamp = System.currentTimeMillis();

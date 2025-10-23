@@ -45,6 +45,6 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
         """,
             nativeQuery = true
     )
-    Page<TransactionHistoryProjection> findHistoryByAccountId(@Param("accountId") Long accountId, Pageable pageable);
+    Page<TransactionHistoryPr   ojection> findHistoryByAccountId(@Param("accountId") Long accountId, Pageable pageable);
 
 }

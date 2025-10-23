@@ -1,7 +1,7 @@
 package org.emmanuel.chewallet.dtos.transactionDto;
 
 public record TransactionDtoRequest(
-        String alias,
+        String accountDestination,
         float amount,
         String description
 ) {

@@ -2,6 +2,7 @@ package org.emmanuel.chewallet.exceptions;
 
 import org.emmanuel.chewallet.dtos.ApiErrorDto;
 import org.emmanuel.chewallet.exceptions.payments.AliasNotFoundException;
+import org.emmanuel.chewallet.exceptions.payments.CvuNotFoundException;
 import org.emmanuel.chewallet.exceptions.payments.InsufficientBalanceException;
 import org.emmanuel.chewallet.exceptions.payments.SameAccountTransferException;
 import org.springframework.core.annotation.Order;
@@ -33,7 +34,17 @@ public class PaymentExceptionHandler {
         ApiErrorDto apiErrorDto = new ApiErrorDto(
                 LocalDateTime.now(),
                 404,
-                "Account Not Found",
+                "Alias Not Found",
+                Map.of("error", ex.getMessage())
+        );
+        return ResponseEntity.status(404).body(apiErrorDto);
+    }
+    @ExceptionHandler(CvuNotFoundException.class)
+    public ResponseEntity<?> handleCvuNotFoundException(CvuNotFoundException ex) {
+        ApiErrorDto apiErrorDto = new ApiErrorDto(
+                LocalDateTime.now(),
+                404,
+                "Cvu Not Found",
                 Map.of("error", ex.getMessage())
         );
         return ResponseEntity.status(404).body(apiErrorDto);

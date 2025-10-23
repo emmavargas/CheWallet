@@ -7,7 +7,9 @@ import org.emmanuel.chewallet.dtos.transactionDto.TransactionDtoRequest;
 import org.emmanuel.chewallet.dtos.transactionDto.TransactionDtoResponse;
 import org.emmanuel.chewallet.entities.*;
 import org.emmanuel.chewallet.exceptions.payments.AliasNotFoundException;
+import org.emmanuel.chewallet.exceptions.payments.CvuNotFoundException;
 import org.emmanuel.chewallet.exceptions.payments.InsufficientBalanceException;
+import org.emmanuel.chewallet.exceptions.payments.SameAccountTransferException;
 import org.emmanuel.chewallet.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,18 +41,26 @@ public class TransactionService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow();
         Account account = user.getAccount();
+        Account accountDestination;
 
-        if (!checkDestinationAliasExists(transactionDtoRequest.alias())){
-            throw new AliasNotFoundException("El alias de destino no existe");
+        if(transactionDtoRequest.accountDestination().matches("\\d{22}")){
+            if(!checkDestinationCvuExists(transactionDtoRequest.accountDestination())){
+                throw new CvuNotFoundException("El CVU de destino no existe");
+            }
+            accountDestination = accountRepository.findByCvu(transactionDtoRequest.accountDestination()).orElseThrow();
+        }else{
+            if (!checkDestinationAliasExists(transactionDtoRequest.accountDestination())){
+                throw new AliasNotFoundException("El alias de destino no existe");
+            }
+            accountDestination = accountRepository.findByAlias(transactionDtoRequest.accountDestination()).orElseThrow();
         }
+
         if(!checkIfAmountIsPositive(transactionDtoRequest.amount(), account)){
             throw new InsufficientBalanceException("Fondos insuficientes para realizar la transaccion");
         }
-        if(account.getAlias().equals(transactionDtoRequest.alias())){
+        if(account.getAlias().equals(transactionDtoRequest.accountDestination())){
             throw new SameAccountTransferException("No se puede transferir a la misma cuenta");
         }
-
-        Account accountDestination = accountRepository.findByAlias(transactionDtoRequest.alias()).orElseThrow();
 
         //TRANSACCION DE ENVIO
         Transaction transactionSent = new Transaction();
@@ -140,8 +150,12 @@ public class TransactionService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkDestinationAliasExists(String alias){
-        return accountRepository.existsByAlias(alias);
+    public boolean checkDestinationAliasExists(String accountAlias){
+        return accountRepository.existsByAlias(accountAlias);
+    }
+
+    public boolean checkDestinationCvuExists(String accountCvu){
+        return accountRepository.existsByCvu(accountCvu);
     }
 
     @Transactional
