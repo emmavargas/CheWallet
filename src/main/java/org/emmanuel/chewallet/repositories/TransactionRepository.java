@@ -29,13 +29,13 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
                t.date AS transactionDate
         FROM transaction t
         JOIN account a ON t.account_id = a.id
-        JOIN account acc_dest ON t.account_destionation__id = acc_dest.id
-        JOIN app_user u_dest ON acc_dest.id = u_dest.account_id
-        JOIN profile p_dest ON u_dest.profile_id = p_dest.id
-        JOIN account acc_origin ON t.account_origin_id = acc_origin.id
-        JOIN app_user u_origin ON acc_origin.id = u_origin.account_id
-        JOIN profile p_origin ON u_origin.profile_id = p_origin.id
-        WHERE a.id = :accountId
+        LEFT JOIN account acc_dest ON t.account_destionation__id = acc_dest.id
+        LEFT JOIN app_user u_dest ON acc_dest.id = u_dest.account_id
+        LEFT JOIN profile p_dest ON u_dest.profile_id = p_dest.id
+        LEFT JOIN account acc_origin ON t.account_origin_id = acc_origin.id
+        LEFT JOIN app_user u_origin ON acc_origin.id = u_origin.account_id
+        LEFT JOIN profile p_origin ON u_origin.profile_id = p_origin.id
+        WHERE a.id = :accountId AND (t.status = 'COMPLETED' OR t.status = 'APPROVED')
         """,
             countQuery = """
         SELECT COUNT(*)
@@ -45,6 +45,6 @@ public interface TransactionRepository extends JpaRepository<Transaction,Long> {
         """,
             nativeQuery = true
     )
-    Page<TransactionHistoryPr   ojection> findHistoryByAccountId(@Param("accountId") Long accountId, Pageable pageable);
+    Page<TransactionHistoryProjection> findHistoryByAccountId(@Param("accountId") Long accountId, Pageable pageable);
 
 }

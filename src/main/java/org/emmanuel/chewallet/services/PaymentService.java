@@ -8,6 +8,7 @@ import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
+import org.emmanuel.chewallet.Enums.TransactionType;
 import org.emmanuel.chewallet.dtos.payments.PaymentRequestDto;
 import org.emmanuel.chewallet.dtos.payments.PaymentStatusRequestDto;
 import org.emmanuel.chewallet.dtos.payments.PaymentStatusDto;
@@ -50,7 +51,7 @@ public class PaymentService {
                     .unitPrice(BigDecimal.valueOf(paymentRequestDto.amount()))
                     .build();
             PreferenceBackUrlsRequest backUrls = PreferenceBackUrlsRequest.builder()
-                .success("https://8f2c67f18ee6.ngrok-free.app/checkout-test.html")
+                .success("https://che-wallet.vercel.app/")
                 .failure("http://localhost:8080/checkout-test.html")
                 .pending("http://localhost:8080/checkout-test.html")
                 .build();
@@ -87,6 +88,7 @@ public class PaymentService {
                     account.setBalance(account.getBalance() + deposit.getAmount());
                     deposit.setStatus("APPROVED");
                     deposit.setTransactionId(paymentStatusRequestDto.paymentId());
+                    deposit.setType(TransactionType.TRANSFER_RECEIVED);
                     accountRepository.save(account);
                     transactionRepository.save(deposit);
                     message = "Pago confirmado y saldo actualizado.";
@@ -94,6 +96,7 @@ public class PaymentService {
                 case "pending", "in_process" ->{
                     var deposit = transactionRepository.findByExternalReference(payment.getExternalReference()).orElseThrow();
                     deposit.setTransactionId(paymentStatusRequestDto.paymentId());
+                    deposit.setType(TransactionType.TRANSFER_RECEIVED);
                     deposit.setStatus("PENDING");
                     transactionRepository.save(deposit);
                     message = "Pago pendiente de acreditación. Te avisaremos cuando se confirme.";
@@ -101,6 +104,7 @@ public class PaymentService {
                 case "rejected" ->{
                     var deposit = transactionRepository.findByExternalReference(payment.getExternalReference()).orElseThrow();
                     deposit.setTransactionId(paymentStatusRequestDto.paymentId());
+                    deposit.setType(TransactionType.TRANSFER_RECEIVED);
                     deposit.setStatus("REJECTED");
                     transactionRepository.save(deposit);
                     message = "Pago rechazado. Intenta nuevamente.";

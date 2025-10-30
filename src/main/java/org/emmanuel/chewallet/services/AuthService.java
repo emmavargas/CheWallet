@@ -53,17 +53,19 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public String createCookieWithToken(String token) {
-//        Cookie cookie = new Cookie("jwt", token);
-//        cookie.setHttpOnly(true);
-//        cookie.setSecure(false);
-//        cookie.setPath("/");
-//        cookie.setMaxAge(60 * 60);
-//        return  cookie;
-        return "jwt=" + token +
-                "; Path=/" +
-                "; HttpOnly" +
-                "; Max-Age=" + (60 * 60) +
-                "; SameSite=Strict";
+    public Cookie createCookieWithToken(String token) {
+        Cookie cookie = new Cookie("jwt", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60);
+        cookie.setAttribute("SameSite", "None");
+        return  cookie;
+//        return "jwt=" + token +
+//                "; Path=/" +
+//                "; Secure" +
+//                "; HttpOnly" +
+//                "; Max-Age=" + (60 * 60) +
+//                "; SameSite=None";
     }
 }

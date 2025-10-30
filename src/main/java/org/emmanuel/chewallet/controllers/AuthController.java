@@ -30,9 +30,9 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto, HttpServletResponse response) {
          try {
             String token = authService.generateToken(loginDto);
-            String cookie = authService.createCookieWithToken(token);
-//            response.addCookie(cookie);
-             response.addHeader("Set-Cookie", cookie);
+            Cookie cookie = authService.createCookieWithToken(token);
+            response.addCookie(cookie);
+//             response.addHeader("Set-Cookie", cookie);
 
             Map<String, String> responseBody = Map.of("message", "login successful", "username", loginDto.username());
             return ResponseEntity.ok().body(responseBody);
@@ -66,8 +66,9 @@ public class AuthController {
             }
             String username = authService.getClaimsFromToken(token);
             String tokenRenovate = authService.refreshToken(token);
-            String cookie = authService.createCookieWithToken(tokenRenovate);
-            response.addHeader("Set-Cookie", cookie);
+            Cookie cookie = authService.createCookieWithToken(tokenRenovate);
+            response.addCookie(cookie);
+//            response.addHeader("Set-Cookie", cookie);
 
             return ResponseEntity.ok(Map.of("message", "Autenticado", "username", username));
 
