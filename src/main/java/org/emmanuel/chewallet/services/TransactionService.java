@@ -95,15 +95,43 @@ public class TransactionService {
         accountDestination.setBalance(accountDestination.getBalance() + transactionDtoRequest.amount());
         accountDestination.getTransactions().add(transactionReceived);
 
-        return new TransactionDtoResponse(
+              return new TransactionDtoResponse(
                 transactionSent.getTransactionId(),
                 account.getCvu(),
+                user.getProfile().getName(),
+                user.getProfile().getLastname(),
                 accountDestination.getCvu(),
+                accountDestination.getUser().getProfile().getName(),
+                accountDestination.getUser().getProfile().getLastname(),
                 transactionSent.getAmount(),
-                transactionSent.getDate().toString()
+                transactionSent.getDate().toString(),
+                transactionSent.getDescription()
         );
-
     }
+
+    @Transactional(readOnly = true)
+    public TransactionDtoResponse getTransactionById(Long  transactionId){
+        
+        Transaction transaction = transactionRepository.findById(transactionId)
+                                .orElseThrow(() -> new RuntimeException("Transaccion no encontrada"));
+
+        Account originAccount = transaction.getAccountOrigin();
+        Account destAccount = transaction.getAccountDestination();
+
+        return new TransactionDtoResponse(
+            transaction.getTransactionId().toString(),
+            originAccount.getCvu(),
+            originAccount.getUser().getProfile().getName(),
+            originAccount.getUser().getProfile().getLastname(),
+            destAccount.getCvu(),
+            destAccount.getUser().getProfile().getName(),
+            destAccount.getUser().getProfile().getLastname(),
+            transaction.getAmount(),
+            transaction.getDate().toString(),
+            transaction.getDescription()
+        );
+    }
+
 
 
 

@@ -18,9 +18,9 @@ public class JwtUtils {
 
     private final SecretKey secretKey;
 
-    public JwtUtils(@Value("${jwt.secret}") String secret, @Value("${jwt.expirationTime}")long expirationTime) {
-        this.secret = secret;
-        this.expirationTime = expirationTime;
+    public JwtUtils() {
+        this.secret = "miclavesecretade32bytesexactos123456";
+        this.expirationTime = 86400000;
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 

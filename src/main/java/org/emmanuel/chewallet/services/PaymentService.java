@@ -1,5 +1,18 @@
 package org.emmanuel.chewallet.services;
 
+import java.math.BigDecimal;
+
+import org.emmanuel.chewallet.Enums.TransactionType;
+import org.emmanuel.chewallet.dtos.payments.PaymentRequestDto;
+import org.emmanuel.chewallet.dtos.payments.PaymentStatusDto;
+import org.emmanuel.chewallet.dtos.payments.PaymentStatusRequestDto;
+import org.emmanuel.chewallet.entities.Transaction;
+import org.emmanuel.chewallet.repositories.AccountRepository;
+import org.emmanuel.chewallet.repositories.TransactionRepository;
+import org.emmanuel.chewallet.repositories.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -8,19 +21,6 @@ import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.resources.payment.Payment;
 import com.mercadopago.resources.preference.Preference;
-import org.emmanuel.chewallet.Enums.TransactionType;
-import org.emmanuel.chewallet.dtos.payments.PaymentRequestDto;
-import org.emmanuel.chewallet.dtos.payments.PaymentStatusRequestDto;
-import org.emmanuel.chewallet.dtos.payments.PaymentStatusDto;
-import org.emmanuel.chewallet.entities.Transaction;
-import org.emmanuel.chewallet.repositories.AccountRepository;
-import org.emmanuel.chewallet.repositories.TransactionRepository;
-import org.emmanuel.chewallet.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 
 @Service
 public class PaymentService {
@@ -28,8 +28,8 @@ public class PaymentService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    @Value("${TOKEN_MP}")
-    private String TOKEN_MP;
+    //@Value("${TOKEN_MP}")
+    private String TOKEN_MP = "hola12345678";
 
     public PaymentService(UserRepository userRepository, AccountRepository accountRepository, TransactionRepository transactionRepository) {
         this.userRepository = userRepository;
