@@ -10,7 +10,6 @@ import org.emmanuel.chewallet.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class PasswordResetService {
 
@@ -29,11 +28,12 @@ public class PasswordResetService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void createPasswordResetToken(String email, String baseUrl) {
+    public void createPasswordResetToken(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         String token = UUID.randomUUID().toString();
+
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setToken(token);
         resetToken.setUser(user);
@@ -41,20 +41,19 @@ public class PasswordResetService {
         resetToken.setUsed(false);
         tokenRepository.save(resetToken);
 
-        String link = baseUrl + "/api/auth/reset-password?token=" + token;
-        emailService.sendPasswordResetEmail(user.getEmail(), link);
+        emailService.sendPasswordResetEmail(user.getEmail(), token);
     }
 
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Token inválido"));
+                .orElseThrow(() -> new RuntimeException("Token inválido o no encontrado"));
 
         if (resetToken.isUsed()) {
-            throw new RuntimeException("Token ya utilizado");
+            throw new RuntimeException("El token ya fue utilizado");
         }
 
         if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Token expirado");
+            throw new RuntimeException("El token ha expirado");
         }
 
         User user = resetToken.getUser();

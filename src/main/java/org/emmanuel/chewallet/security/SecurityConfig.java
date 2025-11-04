@@ -44,7 +44,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://che-wallet.vercel.app"));
+        configuration.setAllowedOrigins(List.of("https://che-wallet.vercel.app",
+         "https://che-wallet-git-comprobante-test-mariano-ocaranzas-projects.vercel.app"));
+         
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -83,6 +85,8 @@ public class SecurityConfig {
                             .requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/register",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password",
                                 "/api/payments/confirm",
                                 "/api/payments/webhook",
                                     "/api/auth/check"

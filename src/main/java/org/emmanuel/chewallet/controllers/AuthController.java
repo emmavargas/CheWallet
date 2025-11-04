@@ -88,14 +88,12 @@ public class AuthController {
         }
     }
 
-     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request,
-                                                 HttpServletRequest httpRequest) {
-        String baseUrl = httpRequest.getRequestURL().toString()
-                .replace(httpRequest.getServletPath(), "");
-        passwordResetService.createPasswordResetToken(request.email(), baseUrl);
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
+        passwordResetService.createPasswordResetToken(request.email());
         return ResponseEntity.ok("Correo de recuperación enviado");
     }
+
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {

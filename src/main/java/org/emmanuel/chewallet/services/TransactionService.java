@@ -152,6 +152,7 @@ public class TransactionService {
 
         List<TransactionDto> transactionsDto = pageTransactions.stream().map(
                 transaction -> new TransactionDto(
+                        transaction.getTransactionId(),
                         transaction.getDestinationName(),
                         transaction.getDestinationLastname(),
                         transaction.getOriginName(),
