@@ -10,6 +10,7 @@ import org.emmanuel.chewallet.entities.Transaction;
 import org.emmanuel.chewallet.repositories.AccountRepository;
 import org.emmanuel.chewallet.repositories.TransactionRepository;
 import org.emmanuel.chewallet.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +29,8 @@ public class PaymentService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    //@Value("${TOKEN_MP}")
-    private String TOKEN_MP = "hola12345678";
+    @Value("${TOKEN_MP}")
+    private String TOKEN_MP;
 
     public PaymentService(UserRepository userRepository, AccountRepository accountRepository, TransactionRepository transactionRepository) {
         this.userRepository = userRepository;

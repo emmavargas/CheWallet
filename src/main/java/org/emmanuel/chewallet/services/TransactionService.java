@@ -118,11 +118,14 @@ public class TransactionService {
         Account originAccount = transaction.getAccountOrigin();
         Account destAccount = transaction.getAccountDestination();
 
-        return new TransactionDtoResponse(
-            transaction.getTransactionId().toString(),
-            originAccount.getCvu(),
-            originAccount.getUser().getProfile().getName(),
-            originAccount.getUser().getProfile().getLastname(),
+
+        String originCvu = originAccount == null ? "Cuenta MP" : originAccount.getCvu();
+        String nameAccountOrigin = originAccount == null ? "Mercado" : originAccount.getUser().getProfile().getName();
+        String lastnameAccountOrigin = originAccount == null ? "Pago" : originAccount.getUser().getProfile().getLastname();
+        return new TransactionDtoResponse(transaction.getTransactionId(),
+            originCvu,
+            nameAccountOrigin,
+            lastnameAccountOrigin,
             destAccount.getCvu(),
             destAccount.getUser().getProfile().getName(),
             destAccount.getUser().getProfile().getLastname(),
