@@ -1,5 +1,7 @@
 package org.emmanuel.chewallet.entities;
 
+import java.util.ArrayList;
+
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public class Account {
     private Float balance = 0.0F;
 
     @OneToMany(mappedBy = "account")
-    private List<Transaction> transactions;
+    private List<Transaction> transactions = new ArrayList<>();
 
     @PostPersist
     public void asignarCvuUnico() {
@@ -40,6 +42,9 @@ public class Account {
             this.alias = sb.toString();
         }
     }
+
+    @OneToOne(mappedBy = "account")
+    private User user;
 
     public Account() {
     }
@@ -83,4 +88,13 @@ public class Account {
     public void setId(long id) {
         this.id = id;
     }
+
+    public User getUser() {
+    return user;    
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 }

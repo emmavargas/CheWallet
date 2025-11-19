@@ -56,6 +56,7 @@ public class UserService {
 
         user.setProfile(profile);
         user.setAccount(account);
+        account.setUser(user);
         user.setDni(registerDto.dni());
         user.setUsername(registerDto.username());
         user.setEmail(registerDto.email());

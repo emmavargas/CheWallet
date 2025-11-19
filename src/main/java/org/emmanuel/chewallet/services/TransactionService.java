@@ -95,15 +95,46 @@ public class TransactionService {
         accountDestination.setBalance(accountDestination.getBalance() + transactionDtoRequest.amount());
         accountDestination.getTransactions().add(transactionReceived);
 
-        return new TransactionDtoResponse(
+              return new TransactionDtoResponse(
                 transactionSent.getTransactionId(),
                 account.getCvu(),
+                user.getProfile().getName(),
+                user.getProfile().getLastname(),
                 accountDestination.getCvu(),
+                accountDestination.getUser().getProfile().getName(),
+                accountDestination.getUser().getProfile().getLastname(),
                 transactionSent.getAmount(),
-                transactionSent.getDate().toString()
+                transactionSent.getDate().toString(),
+                transactionSent.getDescription()
         );
-
     }
+
+    @Transactional(readOnly = true)
+    public TransactionDtoResponse getTransactionById(Long  transactionId){
+        
+        Transaction transaction = transactionRepository.findById(transactionId)
+                                .orElseThrow(() -> new RuntimeException("Transaccion no encontrada"));
+
+        Account originAccount = transaction.getAccountOrigin();
+        Account destAccount = transaction.getAccountDestination();
+
+
+        String originCvu = originAccount == null ? "Cuenta MP" : originAccount.getCvu();
+        String nameAccountOrigin = originAccount == null ? "Mercado" : originAccount.getUser().getProfile().getName();
+        String lastnameAccountOrigin = originAccount == null ? "Pago" : originAccount.getUser().getProfile().getLastname();
+        return new TransactionDtoResponse(transaction.getTransactionId(),
+            originCvu,
+            nameAccountOrigin,
+            lastnameAccountOrigin,
+            destAccount.getCvu(),
+            destAccount.getUser().getProfile().getName(),
+            destAccount.getUser().getProfile().getLastname(),
+            transaction.getAmount(),
+            transaction.getDate().toString(),
+            transaction.getDescription()
+        );
+    }
+
 
 
 
@@ -124,6 +155,7 @@ public class TransactionService {
 
         List<TransactionDto> transactionsDto = pageTransactions.stream().map(
                 transaction -> new TransactionDto(
+                        transaction.getTransactionId(),
                         transaction.getDestinationName(),
                         transaction.getDestinationLastname(),
                         transaction.getOriginName(),

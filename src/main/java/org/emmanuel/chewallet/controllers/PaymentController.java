@@ -82,6 +82,11 @@ public class PaymentController {
         return ResponseEntity.ok(transactionService.getHistoryTransactions(page, size));
     }
 
+    @GetMapping("/transactions/{transactionId}")
+    public ResponseEntity<TransactionDtoResponse> getTransaction(@PathVariable("transactionId") Long transactionId){
+        TransactionDtoResponse transactionDto = transactionService.getTransactionById(transactionId);
+        return ResponseEntity.ok(transactionDto);
+    }
 
     @PostMapping("/amount")
     public ResponseEntity<?> addAmount(@RequestBody TransactionDtoRequest transactionDtoRequest) {

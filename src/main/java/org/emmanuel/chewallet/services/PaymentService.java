@@ -1,17 +1,11 @@
 package org.emmanuel.chewallet.services;
 
-import com.mercadopago.MercadoPagoConfig;
-import com.mercadopago.client.payment.PaymentClient;
-import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
-import com.mercadopago.client.preference.PreferenceClient;
-import com.mercadopago.client.preference.PreferenceItemRequest;
-import com.mercadopago.client.preference.PreferenceRequest;
-import com.mercadopago.resources.payment.Payment;
-import com.mercadopago.resources.preference.Preference;
+import java.math.BigDecimal;
+
 import org.emmanuel.chewallet.Enums.TransactionType;
 import org.emmanuel.chewallet.dtos.payments.PaymentRequestDto;
-import org.emmanuel.chewallet.dtos.payments.PaymentStatusRequestDto;
 import org.emmanuel.chewallet.dtos.payments.PaymentStatusDto;
+import org.emmanuel.chewallet.dtos.payments.PaymentStatusRequestDto;
 import org.emmanuel.chewallet.entities.Transaction;
 import org.emmanuel.chewallet.repositories.AccountRepository;
 import org.emmanuel.chewallet.repositories.TransactionRepository;
@@ -20,7 +14,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import com.mercadopago.MercadoPagoConfig;
+import com.mercadopago.client.payment.PaymentClient;
+import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
+import com.mercadopago.client.preference.PreferenceClient;
+import com.mercadopago.client.preference.PreferenceItemRequest;
+import com.mercadopago.client.preference.PreferenceRequest;
+import com.mercadopago.resources.payment.Payment;
+import com.mercadopago.resources.preference.Preference;
 
 @Service
 public class PaymentService {
@@ -121,9 +122,21 @@ public class PaymentService {
         var deposit = new Transaction();
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         var user = userRepository.findByUsername(username).orElseThrow();
-        if(!user.getAccount().getCvu().equals(paymentRequestDto.cvu())) {
-            throw new RuntimeException("El CVU no corresponde al usuario autenticado");
+
+        //CROTISIMO
+
+        if(paymentRequestDto.cvu().matches("\\d{22}")){
+            if(!user.getAccount().getCvu().equals(paymentRequestDto.cvu())) {
+                System.out.println("CVU ENTRO PERO TIRO ERROR");
+                throw new RuntimeException("El CVU no corresponde al usuario autenticado");
+            }
+            System.out.println("ENTRO A CVU CONFIRMADO");
+        }else {
+            if(!user.getAccount().getAlias().equals(paymentRequestDto.cvu())){
+                throw new RuntimeException("El Alias no corresponde al usuario autenticado");
+            }
         }
+
         deposit.setAmount(paymentRequestDto.amount());
         deposit.setStatus("INITIATED");
         deposit.setDate(java.time.LocalDateTime.now());

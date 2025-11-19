@@ -1,6 +1,7 @@
 package org.emmanuel.chewallet.repositories;
 
 public interface TransactionHistoryProjection {
+    String getTransactionId();
     String getDestinationName();
     String getDestinationLastname();
     String getOriginName();

@@ -1,6 +1,7 @@
 package org.emmanuel.chewallet.dtos.transactionDto;
 
 public record TransactionDto(
+        String transactionId,
         String DestinationName,
         String DestinationLastname,
         String OriginName,
