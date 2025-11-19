@@ -122,9 +122,21 @@ public class PaymentService {
         var deposit = new Transaction();
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         var user = userRepository.findByUsername(username).orElseThrow();
-        if(!user.getAccount().getCvu().equals(paymentRequestDto.cvu())) {
-            throw new RuntimeException("El CVU no corresponde al usuario autenticado");
+
+        //CROTISIMO
+
+        if(paymentRequestDto.cvu().matches("\\d{22}")){
+            if(!user.getAccount().getCvu().equals(paymentRequestDto.cvu())) {
+                System.out.println("CVU ENTRO PERO TIRO ERROR");
+                throw new RuntimeException("El CVU no corresponde al usuario autenticado");
+            }
+            System.out.println("ENTRO A CVU CONFIRMADO");
+        }else {
+            if(!user.getAccount().getAlias().equals(paymentRequestDto.cvu())){
+                throw new RuntimeException("El Alias no corresponde al usuario autenticado");
+            }
         }
+
         deposit.setAmount(paymentRequestDto.amount());
         deposit.setStatus("INITIATED");
         deposit.setDate(java.time.LocalDateTime.now());
